@@ -1,0 +1,17 @@
+{
+  "name": "jtween",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/jTween.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^3.8.2"
+  },
+  "files": [
+    "lib/**/*"
+  ]
+}
