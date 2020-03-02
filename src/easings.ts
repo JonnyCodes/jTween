@@ -15,10 +15,6 @@ export default class Easings {
     static QuadInOut(percent: number): number {
         // Using the Bezier curve function for performance
         return percent * percent * (3 - 2 * percent);
-
-        /* The actual quadratic function is:
-         * return (percent < 0.5) ? percent * percent : 2 * (percent - 0.5) * (1 - (percent - 0.5)) + 0.5;
-         */
     }
 
     static CubicIn(percent: number): number {

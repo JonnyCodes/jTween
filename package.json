@@ -2,7 +2,8 @@
   "name": "jtween",
   "version": "1.0.0",
   "description": "",
-  "main": "lib/jTween.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc"
   },
