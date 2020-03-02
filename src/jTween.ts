@@ -15,7 +15,7 @@ export default class delta {
     private _loop: number;
     private _obj: any;
     private _props: NumberProp;
-    private _propKeys: Array<string>;
+    private _propPaths: Array<string>;
     private _startingVals: NumberProp;
     private _started: boolean;
     private _onCompletePromise: (value?: unknown) => void;
@@ -26,14 +26,17 @@ export default class delta {
         this._loop = loop;
         this._obj = obj;
         this._props = props;
-        this._propKeys = Object.keys(props);
+        this._propPaths = [];
         this._startingVals = {};
         this._elapsedTime = 0;
         this._started = false;
         this._onCompletePromise = () => { };
 
-        this._propKeys.forEach((key) => {
-            this._startingVals[key] = this._obj[key];
+        // Turns the props object into dot seperated paths
+        this._genPropPaths(this._propPaths, props);
+
+        this._propPaths.forEach((path) => {
+            this._startingVals[path] = path.split('.').reduce((obj: any, key: string) => obj[key], this._obj);
         });
     }
 
@@ -69,8 +72,27 @@ export default class delta {
     }
 
     private _updateProps() {
-        this._propKeys.forEach((key) => {
-            this._obj[key] = this._startingVals[key] + (this._props[key] * this.value);
+        this._propPaths.forEach((path) => {
+            const splitPath = path.split(".");
+            const basePathArr = splitPath.slice(0, splitPath.length - 1);
+            const finalPath = splitPath[splitPath.length - 1];
+
+            // TODO: This is very ugly, clean it up!! Is there a better way than dot seperated paths?
+            basePathArr.reduce((obj: any, key: string) => obj[key], this._obj)[finalPath] = this._startingVals[path] + (basePathArr.reduce((prop: any, key: string) => prop[key], this._props)[finalPath] * this.value);
+        });
+    }
+
+    private _genPropPaths(arr: Array<string>, obj: any, path = "") {
+        const keys = Object.keys(obj);
+
+        keys.forEach((key) => {
+            const currPath = path + (path.length ? `.${key}` : key);
+            if (Object.getPrototypeOf(obj[key]) === Object.getPrototypeOf({})) {
+                this._genPropPaths(arr, obj[key], `${currPath}`);
+            }
+            else {
+                arr.push(currPath);
+            }
         });
     }
 }
