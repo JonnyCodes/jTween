@@ -9,6 +9,7 @@ export default class delta<T> {
     protected _elapsedTime: number;
     protected _ease: (percent: number) => number;
     private _loop: number;
+    private _completedLoops: number;
     private _obj: any;
     private _props: Partial<T>;
     private _startingVals: Partial<T>;
@@ -20,8 +21,9 @@ export default class delta<T> {
         this._ease = ease;
         this._loop = loop;
         this._obj = obj;
-        this._props = props;
-        this._startingVals = {};
+        this._props = props; // TODO: Deep clone this
+
+        this._completedLoops = 0;
         this._elapsedTime = 0;
         this._started = false;
         this._onCompletePromise = () => { };
@@ -31,6 +33,10 @@ export default class delta<T> {
 
     get value(): number {
         return this._ease(this._elapsedTime / this._duration);
+    }
+
+    get completedLoops() {
+        return this._completedLoops;
     }
 
     public async start() {
@@ -48,6 +54,7 @@ export default class delta<T> {
                 if (this._loop < 0 || this._loop > 0) {
                     this._elapsedTime = this._elapsedTime % this._duration;
                     this._loop--;
+                    this._completedLoops++;
                     // TODO: onLoop callback
                 }
                 else {
@@ -57,22 +64,26 @@ export default class delta<T> {
                 }
             }
 
-            this._updateProps();
+            this._updateProps(this._obj, this._props, this._startingVals);
         }
     }
 
-    // TODO: REFACTOR!!!!
-    private _updateProps() {
-        this._propPaths.forEach((path: string) => {
-            const splitPath = path.split(".");
-            const basePathArr = splitPath.slice(0, splitPath.length - 1);
-            const finalPath = splitPath[splitPath.length - 1];
+    // Recursive function to update all the properties
+    private _updateProps(sourceObj: T, props: Partial<T>, startingVals: Partial<T>) {
+        const propKeys = Object.keys(props)
 
-            // TODO: This is very ugly, clean it up!! Is there a better way than dot seperated paths?
-            basePathArr.reduce((obj: any, key: string) => obj[key], this._obj)[finalPath] = this._startingVals[path] + (basePathArr.reduce((prop: any, key: string) => prop[key], this._props)[finalPath] * this.value);
+        propKeys.forEach((key: string) => {
+            const currProp = props[key];
+            if (this._isObject(currProp)) {
+                this._updateProps(sourceObj[key], currProp, startingVals[key]);
+            }
+            else {
+                sourceObj[key] = startingVals[key] + (currProp * this.value);
+            }
         });
     }
 
+    // Recursive function gets all the properties and returns them in a new object
     private _getValuesFromUsingProps(sourceObj: T, propsObj: Partial<T>, returnObj: Partial<T> = {}): Partial<T> {
         const keys = Object.keys(propsObj);
 
