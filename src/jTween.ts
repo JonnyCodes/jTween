@@ -1,43 +1,32 @@
 import Easings from "./easings";
 
-interface NumberProp {
-    [label: string]: number;
-}
-
 /**
  * Change the given objects properties by the amount in props
  */
-export default class delta {
+export default class delta<T> {
 
     protected _duration: number;
     protected _elapsedTime: number;
     protected _ease: (percent: number) => number;
     private _loop: number;
     private _obj: any;
-    private _props: NumberProp;
-    private _propPaths: Array<string>;
-    private _startingVals: NumberProp;
+    private _props: Partial<T>;
+    private _startingVals: Partial<T>;
     private _started: boolean;
     private _onCompletePromise: (value?: unknown) => void;
 
-    constructor(duration: number, obj: any, props: NumberProp = {}, loop: number = 0, ease = Easings.Linear) {
+    constructor(duration: number, obj: T, props: Partial<T> = {}, loop: number = 0, ease = Easings.Linear) {
         this._duration = duration;
         this._ease = ease;
         this._loop = loop;
         this._obj = obj;
         this._props = props;
-        this._propPaths = [];
         this._startingVals = {};
         this._elapsedTime = 0;
         this._started = false;
         this._onCompletePromise = () => { };
 
-        // Turns the props object into dot seperated paths
-        this._genPropPaths(this._propPaths, props);
-
-        this._propPaths.forEach((path) => {
-            this._startingVals[path] = path.split('.').reduce((obj: any, key: string) => obj[key], this._obj);
-        });
+        this._startingVals = this._getValuesFromUsingProps(this._obj, this._props);
     }
 
     get value(): number {
@@ -59,6 +48,7 @@ export default class delta {
                 if (this._loop < 0 || this._loop > 0) {
                     this._elapsedTime = this._elapsedTime % this._duration;
                     this._loop--;
+                    // TODO: onLoop callback
                 }
                 else {
                     this._elapsedTime = this._duration;
@@ -71,8 +61,9 @@ export default class delta {
         }
     }
 
+    // TODO: REFACTOR!!!!
     private _updateProps() {
-        this._propPaths.forEach((path) => {
+        this._propPaths.forEach((path: string) => {
             const splitPath = path.split(".");
             const basePathArr = splitPath.slice(0, splitPath.length - 1);
             const finalPath = splitPath[splitPath.length - 1];
@@ -82,17 +73,22 @@ export default class delta {
         });
     }
 
-    private _genPropPaths(arr: Array<string>, obj: any, path = "") {
-        const keys = Object.keys(obj);
+    private _getValuesFromUsingProps(sourceObj: T, propsObj: Partial<T>, returnObj: Partial<T> = {}): Partial<T> {
+        const keys = Object.keys(propsObj);
 
         keys.forEach((key) => {
-            const currPath = path + (path.length ? `.${key}` : key);
-            if (Object.getPrototypeOf(obj[key]) === Object.getPrototypeOf({})) {
-                this._genPropPaths(arr, obj[key], `${currPath}`);
+            if (this._isObject(sourceObj[key])) {
+                return this._getValuesFromUsingProps(sourceObj, propsObj, returnObj);
             }
-            else {
-                arr.push(currPath);
+            else if (typeof sourceObj[key] !== "undefined") {
+                returnObj[key] = sourceObj[key];
             }
         });
+
+        return returnObj;
+    }
+
+    private _isObject(obj: any) {
+        return Object.getPrototypeOf(obj) === Object.getPrototypeOf({});
     }
 }
