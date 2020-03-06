@@ -1,5 +1,5 @@
 import Easings from "./easings";
-import delta from "./jTween";
+import delta, { TweenOptions } from "./jTween";
 
 export default class jTweener {
 
@@ -10,8 +10,8 @@ export default class jTweener {
         this._allTweens = [];
     }
 
-    delta<T>(duration: number, obj: T, props: Partial<T> = {}, loop = 0, ease = Easings.Linear): delta<T> {
-        const newDelta = new delta(duration, obj, props, loop, ease);
+    delta<T>(duration: number, obj: T, props: any = {}, options: TweenOptions): delta<T> {
+        const newDelta = new delta(duration, obj, props, options);
         this._allTweens.push(newDelta);
         return newDelta;
     }

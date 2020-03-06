@@ -7,7 +7,6 @@ Messing about writing a tween library.
  + TESTS!!!!
  + More Eases
  + Add loopProgress and totalProgress??
- + Destroy tween?
  + More tween types - to, from, fromTo? any more? Can all be based off delta.
     + from + fromTo tween, should it set the objs from values on tween creation or on start()?
  + onLoop callback?

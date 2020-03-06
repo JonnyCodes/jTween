@@ -28,7 +28,7 @@ export default class Easings {
     }
 
     static CubicInOut(percent: number): number {
-        return percent < 0.5 ? 4 * Math.pow(percent, 3) : (percent - 1) * (2 * percent - 2) * (2 * percent - 2) + 1;
+        return percent < 0.5 ? 4 * Math.pow(percent, 3) : (percent - 1) * Math.pow(2 * percent - 2, 2) + 1;
     }
 
     static QuartIn(percent: number): number {
@@ -51,8 +51,27 @@ export default class Easings {
         return Math.pow(percent - 1, 5) + 1;
     }
 
-    // TODO: This seems wrong
     static QuintInOut(percent: number): number {
-        return percent < 0.5 ? 0.5 * Math.pow(percent, 5) : 0.5 * (Math.pow(percent - 2, 5) + 2);
+        return percent < 0.5 ? 16 * Math.pow(percent, 5) : (percent - 1) * Math.pow(2 * percent - 2, 4) + 1;
+    }
+
+    static SineIn(percent: number): number {
+        return -1 * Math.cos(percent * (Math.PI / 2)) + 1;
+    }
+
+    static SineOut(percent: number): number {
+        return Math.cos(percent * (Math.PI / 2));
+    }
+
+    static SineInOut(percent: number): number {
+        return -0.5 * (Math.cos(Math.PI * percent) - 1);
+    }
+
+    static ExpoIn(percent: number): number {
+        return (percent === 0) ? 0 : Math.pow(2, 10 * (percent - 1));
+    }
+
+    static ExpoOut(percent: number): number {
+        return (percent === 1) ? 1 : -Math.pow(2, -10 * percent) + 1;
     }
 }
