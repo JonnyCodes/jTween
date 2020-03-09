@@ -1,8 +1,10 @@
 import Easings from "./easings";
 
 export interface TweenOptions {
-    repeat: number,
-    ease: (percent: number) => number
+    repeat?: number,
+    ease?: (percent: number) => number,
+    onRepeat?: (repeatNum: number) => void,
+    onRepeatScope?: any
 }
 
 /**
@@ -14,21 +16,26 @@ export default class delta<T extends any> {
     protected _elapsedTime: number;
     protected _ease: (percent: number) => number;
     private _repeat: number;
-    private _completedLoops: number;
+    private _numRepeats: number;
     private _obj: T;
     private _props: any;
     private _startingVals: any;
     private _started: boolean;
-    private _onCompletePromise: (value?: unknown) => void;
+    private _onCompletePromise: () => void;
+    private _onRepeat: (repeatNum: number) => void;
+    private _onRepeatScope: any;
 
     constructor(duration: number, obj: T, props: any, options: TweenOptions) {
         this._duration = duration;
-        this._ease = options.ease || Easings.Linear;
-        this._repeat = options.repeat || 0;
         this._obj = obj;
         this._props = props; // TODO: Deep clone this
 
-        this._completedLoops = 0;
+        this._ease = options.ease || Easings.Linear;
+        this._repeat = options.repeat || 0;
+        this._onRepeat = options.onRepeat || ((num: number) => { });
+        this._onRepeatScope = options.onRepeatScope || this;
+
+        this._numRepeats = 0;
         this._elapsedTime = 0;
         this._started = false;
         this._startingVals = {};
@@ -41,7 +48,7 @@ export default class delta<T extends any> {
     }
 
     get completedLoops(): number {
-        return this._completedLoops;
+        return this._numRepeats;
     }
 
     public async start() {
@@ -61,9 +68,8 @@ export default class delta<T extends any> {
                 if (this._repeat < 0 || this._repeat > 0) {
                     this._elapsedTime = this._elapsedTime % this._duration;
                     this._repeat--;
-                    this._completedLoops++;
-                    this._updateProps(this._obj, this._startingVals, this._startingVals);
-                    // TODO: onLoop callback
+                    this._numRepeats++;
+                    this._onRepeat.call(this._onRepeatScope, this._numRepeats)
                 }
                 else {
                     this._elapsedTime = this._duration;
@@ -81,13 +87,15 @@ export default class delta<T extends any> {
         delete this._ease;
         delete this._repeat;
         delete this._obj;
-        delete this._props; // TODO: Deep clone this
+        delete this._props;
 
-        delete this._completedLoops;
+        delete this._numRepeats;
         delete this._elapsedTime;
         delete this._started;
         delete this._startingVals;
         delete this._onCompletePromise;
+        delete this._onRepeat;
+        delete this._onRepeatScope;
     }
 
     // Recursive function to update all the properties

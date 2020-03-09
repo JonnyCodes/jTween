@@ -10,8 +10,8 @@ export default class jTweener {
         this._allTweens = [];
     }
 
-    delta<T>(duration: number, obj: T, props: any = {}, options: TweenOptions): delta<T> {
-        const newDelta = new delta(duration, obj, props, options);
+    delta<T>(duration: number, targetObj: T, props: any = {}, options: TweenOptions): delta<T> {
+        const newDelta = new delta(duration, targetObj, props, options);
         this._allTweens.push(newDelta);
         return newDelta;
     }

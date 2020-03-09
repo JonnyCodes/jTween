@@ -9,6 +9,5 @@ Messing about writing a tween library.
  + Add loopProgress and totalProgress??
  + More tween types - to, from, fromTo? any more? Can all be based off delta.
     + from + fromTo tween, should it set the objs from values on tween creation or on start()?
- + onLoop callback?
  + yoyo? How do onLoop callbacks work here?
  + startDelay and endDelay? LoopsDelay? How does that effect yoyo??
