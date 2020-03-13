@@ -1,4 +1,4 @@
-import Easings from "./easings";
+import { Easings } from ".";
 
 export interface TweenOptions {
     repeat?: number,
@@ -21,6 +21,7 @@ export default class delta<T extends any> {
     private _props: any;
     private _startingVals: any;
     private _started: boolean;
+    private _destroyed: boolean;
     private _onCompletePromise: () => void;
     private _onRepeat: (repeatNum: number) => void;
     private _onRepeatScope: any;
@@ -39,6 +40,7 @@ export default class delta<T extends any> {
         this._elapsedTime = 0;
         this._started = false;
         this._startingVals = {};
+        this._destroyed = false;
         this._onCompletePromise = () => { };
 
     }
@@ -49,6 +51,10 @@ export default class delta<T extends any> {
 
     get completedLoops(): number {
         return this._numRepeats;
+    }
+
+    get destroyed(): boolean {
+        return this._destroyed;
     }
 
     public async start() {
@@ -80,22 +86,14 @@ export default class delta<T extends any> {
 
             this._updateProps(this._obj, this._props, this._startingVals);
         }
+
+        if (this._destroyed) {
+            this._destroy();
+        }
     }
 
     public destroy(): void {
-        delete this._duration;
-        delete this._ease;
-        delete this._repeat;
-        delete this._obj;
-        delete this._props;
-
-        delete this._numRepeats;
-        delete this._elapsedTime;
-        delete this._started;
-        delete this._startingVals;
-        delete this._onCompletePromise;
-        delete this._onRepeat;
-        delete this._onRepeatScope;
+        this._destroyed = true;
     }
 
     // Recursive function to update all the properties
@@ -119,7 +117,7 @@ export default class delta<T extends any> {
         keys.forEach((key) => {
             if (this._isObject(propsObj[key])) {
                 returnObj[key] = {};
-                return this._getValuesFromUsingProps(sourceObj[key], propsObj[key], returnObj[key]);
+                return this._getValuesFromUsingProps(sourceObj[key], (propsObj[key] as object), returnObj[key]);
             }
             else if (typeof sourceObj[key] !== "undefined") {
                 returnObj[key] = sourceObj[key];
@@ -129,7 +127,30 @@ export default class delta<T extends any> {
         return returnObj;
     }
 
-    private _isObject(obj: any) {
+    private _isObject(obj: any): boolean {
         return Object.getPrototypeOf(obj) === Object.getPrototypeOf({});
+    }
+
+    private _destroy(): void {
+        delete this._duration;
+        delete this._ease;
+        delete this._repeat;
+        delete this._obj;
+        delete this._props;
+
+        delete this._numRepeats;
+        delete this._elapsedTime;
+        delete this._started;
+        delete this._startingVals;
+        delete this._destroyed;
+        delete this._onCompletePromise;
+        delete this._onRepeat;
+        delete this._onRepeatScope;
+
+        delete this.start;
+        delete this.update;
+        delete this._updateProps;
+        delete this._getValuesFromUsingProps;
+        delete this._isObject;
     }
 }

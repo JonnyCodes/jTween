@@ -1,4 +1,4 @@
-import jTweener from "./jTweener"
-import Easings from "./easings"
+import jTweener from "./jTweener";
+import * as Easings from "./easings";
 
 export { jTweener, Easings };
