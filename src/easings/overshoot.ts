@@ -1,10 +1,20 @@
 export class Overshoot {
 
-    static In(percent: number): number {
-        return Math.pow(percent, 2) * (2.5 * percent - 1.5);
+    static In(overshoot: number = 1.65): (percent: number) => number {
+        return (percent: number) => {
+            return Math.pow(percent, 2) * ((overshoot + 1) * percent - overshoot);
+        }
     }
 
-    static Out(percent: number): number {
-        return Math.pow(percent - 1, 2) * (2.5 * (percent - 1) + 1.5) + 1;
+    static Out(overshoot: number = 1.65): (percent: number) => number {
+        return (percent: number) => {
+            return Math.pow(percent - 1, 2) * ((overshoot + 1) * (percent - 1) + overshoot) + 1;
+        }
+    }
+
+    static InOut(overshoot: number = 1.65): (percent: number) => number {
+        return (percent: number) => {
+            return ((percent *= 2) < 1 ? Math.pow(percent, 2) * ((overshoot + 1) * percent - overshoot) : (percent -= 2) * percent * ((overshoot + 1) * percent + overshoot) + 2) / 2;
+        }
     }
 }
