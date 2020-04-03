@@ -1,156 +1,47 @@
-import { Easings } from ".";
+import TweenOptions from "./tweens/iTweenOptions";
+import delta from "./tweens/delta";
+import to from "./tweens/to";
+import from from "./tweens/from";
 
-export interface TweenOptions {
-    repeat?: number,
-    ease?: (percent: number) => number,
-    onRepeat?: (repeatNum: number) => void,
-    onRepeatScope?: any
-}
+export default class jTween {
 
-/**
- * Change the given objects properties by the amount in props
- */
-export default class delta<T extends any> {
+    private _allTweens: Array<delta<any>>;
 
-    protected _duration: number;
-    protected _elapsedTime: number;
-    protected _ease: (percent: number) => number;
-    private _repeat: number;
-    private _numRepeats: number;
-    private _obj: T;
-    private _props: any;
-    private _startingVals: any;
-    private _started: boolean;
-    private _destroyed: boolean;
-    private _onCompletePromise: () => void;
-    private _onRepeat: (repeatNum: number) => void;
-    private _onRepeatScope: any;
+    constructor() {
+        this._allTweens = []; // TODO: Is iterating and adding/removing from a linked list faster?
+    }
 
-    constructor(duration: number, obj: T, props: any, options: TweenOptions) {
-        this._duration = duration;
-        this._obj = obj;
-        this._props = props; // TODO: Deep clone this
+    delta<T>(duration: number, targetObj: T, props: any = {}, options: TweenOptions): delta<T> {
+        const newDelta = new delta(duration, targetObj, props, options);
+        this._allTweens.unshift(newDelta);
+        return newDelta;
+    }
 
-        this._ease = options.ease || Easings.Linear;
-        this._repeat = options.repeat || 0;
-        this._onRepeat = options.onRepeat || ((num: number) => { });
-        this._onRepeatScope = options.onRepeatScope || this;
+    to<T>(duration: number, targetObj: T, props: any = {}, options: TweenOptions) {
+        const newTo = new to(duration, targetObj, props, options);
+        this._allTweens.unshift(newTo);
+        return newTo;
+    }
 
-        this._numRepeats = 0;
-        this._elapsedTime = 0;
-        this._started = false;
-        this._startingVals = {};
-        this._destroyed = false;
-        this._onCompletePromise = () => { };
+    from<T>(duration: number, targetObj: T, props: any = {}, options: TweenOptions) {
+        const newFrom = new from(duration, targetObj, props, options);
+        this._allTweens.unshift(newFrom);
+        return newFrom;
+    }
+
+    fromTo<T>(duration: number, targetObj: T, fromProps: any = {}, toProps: any = {}, options: TweenOptions) {
 
     }
 
-    get value(): number {
-        return this._ease(this._elapsedTime / this._duration);
-    }
+    update(timeDelta: number) {
+        for (let i = this._allTweens.length - 1; i >= 0; i--) {
+            const tween = this._allTweens[i];
+            tween.update(timeDelta);
 
-    get completedLoops(): number {
-        return this._numRepeats;
-    }
-
-    get destroyed(): boolean {
-        return this._destroyed;
-    }
-
-    public async start() {
-        this._startingVals = this._getValuesFromUsingProps(this._obj, this._props);
-
-        return new Promise((resolve) => {
-            this._started = true;
-            this._onCompletePromise = resolve;
-        });
-    }
-
-    public update(deltaTime: number): void {
-        if (this._started) {
-            this._elapsedTime += deltaTime;
-
-            if (this._elapsedTime > this._duration) {
-                if (this._repeat < 0 || this._repeat > 0) {
-                    this._elapsedTime = this._elapsedTime % this._duration;
-                    this._repeat--;
-                    this._numRepeats++;
-                    this._onRepeat.call(this._onRepeatScope, this._numRepeats)
-                }
-                else {
-                    this._elapsedTime = this._duration;
-                    this._started = false;
-                    this._onCompletePromise();
-                }
+            // Remove destroyed tweens
+            if (tween.destroyed) {
+                this._allTweens.splice(i, 1);
             }
-
-            this._updateProps(this._obj, this._props, this._startingVals);
         }
-
-        if (this._destroyed) {
-            this._destroy();
-        }
-    }
-
-    public destroy(): void {
-        this._destroyed = true;
-    }
-
-    // Recursive function to update all the properties
-    private _updateProps(sourceObj: T, props: any, startingVals: any): void {
-        const propKeys = Object.keys(props)
-        propKeys.forEach((key: string) => {
-            const currProp: number | object = props[key];
-            if (this._isObject(currProp)) {
-                this._updateProps(sourceObj[key], currProp, startingVals[key]);
-            }
-            else {
-                sourceObj[key] = startingVals[key] + ((currProp as number) * this.value);
-            }
-        });
-    }
-
-    // Recursive function gets the props in propsObj from the sourceObj and puts them in the returnObj
-    private _getValuesFromUsingProps(sourceObj: T, propsObj: any, returnObj: any = {}): any {
-        const keys = Object.keys(propsObj);
-
-        keys.forEach((key) => {
-            if (this._isObject(propsObj[key])) {
-                returnObj[key] = {};
-                return this._getValuesFromUsingProps(sourceObj[key], (propsObj[key] as object), returnObj[key]);
-            }
-            else if (typeof sourceObj[key] !== "undefined") {
-                returnObj[key] = sourceObj[key];
-            }
-        });
-
-        return returnObj;
-    }
-
-    private _isObject(obj: any): boolean {
-        return Object.getPrototypeOf(obj) === Object.getPrototypeOf({});
-    }
-
-    private _destroy(): void {
-        delete this._duration;
-        delete this._ease;
-        delete this._repeat;
-        delete this._obj;
-        delete this._props;
-
-        delete this._numRepeats;
-        delete this._elapsedTime;
-        delete this._started;
-        delete this._startingVals;
-        delete this._destroyed;
-        delete this._onCompletePromise;
-        delete this._onRepeat;
-        delete this._onRepeatScope;
-
-        delete this.start;
-        delete this.update;
-        delete this._updateProps;
-        delete this._getValuesFromUsingProps;
-        delete this._isObject;
     }
 }

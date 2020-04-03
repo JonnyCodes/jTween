@@ -8,3 +8,4 @@ export { Expo } from "./easings/expo";
 export { Circ } from "./easings/circ";
 export { Elastic } from "./easings/elastic";
 export { Overshoot } from "./easings/overshoot";
+export { Bounce } from "./easings/bounce";

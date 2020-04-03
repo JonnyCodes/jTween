@@ -5,9 +5,8 @@ Messing about writing a tween library.
 
 ## TODO:
  + TESTS!!!!
- + More Eases
  + Add loopProgress and totalProgress??
- + More tween types - to, from, fromTo? any more? Can all be based off delta.
-    + from + fromTo tween, should it set the objs from values on tween creation or on start()?
+ + More tween types - to, from, fromTo? any more?
+    + from + fromTo tween, should set the objs from values on start()
  + yoyo? How do onLoop callbacks work here?
  + startDelay and endDelay? LoopsDelay? How does that effect yoyo??
