@@ -1,5 +1,6 @@
 import TweenOptions from "./iTweenOptions";
 import * as Easings from "../easings";
+import Utils from "../utils";
 
 /**
  * Change the given objects properties by the amount in props
@@ -96,7 +97,7 @@ export default class delta<T extends any> {
         const propKeys = Object.keys(props)
         propKeys.forEach((key: string) => {
             const currProp: number | object = props[key];
-            if (this._isObject(currProp)) {
+            if (Utils.isObject(currProp)) {
                 this._updateProps(sourceObj[key], currProp, startingVals[key]);
             }
             else {
@@ -110,7 +111,7 @@ export default class delta<T extends any> {
         const keys = Object.keys(propsObj);
 
         keys.forEach((key) => {
-            if (this._isObject(propsObj[key])) {
+            if (Utils.isObject(propsObj[key])) {
                 returnObj[key] = {};
                 return this._getValuesFromUsingProps(sourceObj[key], (propsObj[key] as object), returnObj[key]);
             }
@@ -120,10 +121,6 @@ export default class delta<T extends any> {
         });
 
         return returnObj;
-    }
-
-    protected _isObject(obj: any): boolean {
-        return Object.getPrototypeOf(obj) === Object.getPrototypeOf({});
     }
 
     protected _destroy(): void {
@@ -146,6 +143,5 @@ export default class delta<T extends any> {
         delete this.update;
         delete this._updateProps;
         delete this._getValuesFromUsingProps;
-        delete this._isObject;
     }
 }

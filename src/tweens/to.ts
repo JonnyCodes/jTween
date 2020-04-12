@@ -1,5 +1,6 @@
 import TweenOptions from "./iTweenOptions";
 import delta from "./delta";
+import Utils from "../utils";
 
 export default class to<T extends any> extends delta<T> {
 
@@ -12,7 +13,7 @@ export default class to<T extends any> extends delta<T> {
         const propKeys = Object.keys(props)
         propKeys.forEach((key: string) => {
             const currProp: number | object = props[key];
-            if (this._isObject(currProp)) {
+            if (Utils.isObject(currProp)) {
                 this._updateProps(sourceObj[key], currProp, startingVals[key]);
             }
             else {
