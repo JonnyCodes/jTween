@@ -1,6 +1,5 @@
 import from from "./from";
 import TweenOptions from "./iTweenOptions";
-import Utils from "../utils";
 
 export class fromTo<T extends any> extends from<T> {
     

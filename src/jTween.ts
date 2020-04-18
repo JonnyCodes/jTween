@@ -2,6 +2,7 @@ import TweenOptions from "./tweens/iTweenOptions";
 import delta from "./tweens/delta";
 import to from "./tweens/to";
 import from from "./tweens/from";
+import { fromTo } from "./tweens/fromTo";
 
 export default class jTween {
 
@@ -30,7 +31,9 @@ export default class jTween {
     }
 
     fromTo<T>(duration: number, targetObj: T, fromProps: any = {}, toProps: any = {}, options: TweenOptions) {
-
+        const newFromTo = new fromTo(duration, targetObj, fromProps, toProps, options);
+        this._allTweens.unshift(newFromTo);
+        return newFromTo;
     }
 
     update(timeDelta: number) {
