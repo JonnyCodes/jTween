@@ -1,1 +1,3 @@
-export const Linear = (percent: number) => percent;
+export const Linear = () => {
+    return (percent: number) => percent;
+}

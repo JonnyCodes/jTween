@@ -27,7 +27,7 @@ export default class delta<T extends any> {
         this._obj = obj;
         this._props = this._getValuesFromUsingProps(props, props);
 
-        this._ease = options.ease || Easings.Linear;
+        this._ease = options.ease || Easings.Linear();
         this._repeat = options.repeat || 0;
         this._onRepeat = options.onRepeat || ((num: number) => { });
         this._onRepeatScope = options.onRepeatScope || this;
