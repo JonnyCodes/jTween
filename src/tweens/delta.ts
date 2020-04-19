@@ -56,7 +56,7 @@ export default class delta<T extends any> {
         return this._destroyed;
     }
 
-    set format(formatter: (value: number) => any) {
+    set formatter(formatter: (value: number) => any) {
         this._formatter = formatter;
     }
 
