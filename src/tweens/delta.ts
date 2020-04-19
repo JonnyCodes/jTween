@@ -1,6 +1,7 @@
 import TweenOptions from "./iTweenOptions";
 import * as Easings from "../easings";
 import Utils from "../utils";
+import { DefaultFormat } from "../formatters"
 
 /**
  * Change the given objects properties by the amount in props
@@ -21,6 +22,7 @@ export default class delta<T extends any> {
     private _onCompletePromise: () => void;
     private _onRepeat: (repeatNum: number) => void;
     private _onRepeatScope: any;
+    private _formatter: (value: number) => any;
 
     constructor(duration: number, obj: T, props: any, options: TweenOptions) {
         this._duration = duration;
@@ -39,6 +41,7 @@ export default class delta<T extends any> {
         this._destroyed = false;
         this._onCompletePromise = () => { };
 
+        this._formatter = DefaultFormat.default;
     }
 
     get value(): number {
@@ -51,6 +54,10 @@ export default class delta<T extends any> {
 
     get destroyed(): boolean {
         return this._destroyed;
+    }
+
+    set format(formatter: (value: number) => any) {
+        this._formatter = formatter;
     }
 
     public async start() {
@@ -101,7 +108,7 @@ export default class delta<T extends any> {
                 this._updateProps(sourceObj[key], currProp, startingVals[key]);
             }
             else {
-                sourceObj[key] = startingVals[key] + ((currProp as number) * this.value);
+                sourceObj[key] = this._formatter(startingVals[key] + ((currProp as number) * this.value));
             }
         });
     }
