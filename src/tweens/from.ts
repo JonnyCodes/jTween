@@ -1,4 +1,4 @@
-import TweenOptions from "./iTweenOptions";
+import { TweenOptions } from "./tweenOptions";
 import delta from "./delta";
 import Utils from "../utils";
 
@@ -21,10 +21,10 @@ export default class from<T extends any> extends delta<T> {
         propKeys.forEach((key: string) => {
             const currProp: number | object = props[key];
             if (Utils.isObject(currProp)) {
-                this._updateProps(sourceObj[key], currProp, startingVals[key]);
+                this._updateProps((sourceObj as any)[key], currProp, startingVals[key]);
             }
             else {
-                sourceObj[key] = startingVals[key] + (((currProp as number) - startingVals[key]) * this.value);
+                (sourceObj as any)[key] = this._formatter(startingVals[key] + ((currProp - startingVals[key]) * this.value));
             }
         });
     }

@@ -1,8 +1,8 @@
-import TweenOptions from "./tweens/iTweenOptions";
+import { TweenOptions } from "./tweens/tweenOptions";
 import delta from "./tweens/delta";
 import to from "./tweens/to";
 import from from "./tweens/from";
-import { fromTo } from "./tweens/fromTo";
+import fromTo from "./tweens/fromTo";
 import { DefaultFormat } from "./formats/defaultFormat";
 
 export default class jTween {

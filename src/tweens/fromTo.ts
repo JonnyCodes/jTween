@@ -1,7 +1,7 @@
 import from from "./from";
-import TweenOptions from "./iTweenOptions";
+import { TweenOptions } from "./tweenOptions";
 
-export class fromTo<T extends any> extends from<T> {
+export default class fromTo<T extends any> extends from<T> {
     
     private _toProps: any;
 

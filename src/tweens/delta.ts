@@ -1,4 +1,4 @@
-import TweenOptions from "./iTweenOptions";
+import { TweenOptions } from "./tweenOptions";
 import * as Easings from "../easings";
 import Utils from "../utils";
 import { DefaultFormat } from "../formatters"
@@ -11,6 +11,7 @@ export default class delta<T extends any> {
     protected _obj: T;
     protected _props: any;
     protected _startingVals: any;
+    protected _formatter: (value: number) => any;
 
     private _duration: number;
     private _elapsedTime: number;
@@ -22,7 +23,6 @@ export default class delta<T extends any> {
     private _onCompletePromise: () => void;
     private _onRepeat: (repeatNum: number) => void;
     private _onRepeatScope: any;
-    private _formatter: (value: number) => any;
 
     constructor(duration: number, obj: T, props: any, options: TweenOptions) {
         this._duration = duration;
@@ -105,10 +105,10 @@ export default class delta<T extends any> {
         propKeys.forEach((key: string) => {
             const currProp: number | object = props[key];
             if (Utils.isObject(currProp)) {
-                this._updateProps(sourceObj[key], currProp, startingVals[key]);
+                this._updateProps((sourceObj as any)[key], currProp, startingVals[key]);
             }
             else {
-                sourceObj[key] = this._formatter(startingVals[key] + ((currProp as number) * this.value));
+                (sourceObj as any)[key] = this._formatter(startingVals[key] + ((currProp as number) * this.value));
             }
         });
     }
@@ -120,10 +120,10 @@ export default class delta<T extends any> {
         keys.forEach((key) => {
             if (Utils.isObject(propsObj[key])) {
                 returnObj[key] = {};
-                return this._getValuesFromUsingProps(sourceObj[key], (propsObj[key] as object), returnObj[key]);
+                return this._getValuesFromUsingProps((sourceObj as any)[key], (propsObj[key] as object), returnObj[key]);
             }
-            else if (typeof sourceObj[key] !== "undefined") {
-                returnObj[key] = sourceObj[key];
+            else if (!Utils.isUndefined((sourceObj as any)[key])) {
+                returnObj[key] = (sourceObj as any)[key];
             }
         });
 
