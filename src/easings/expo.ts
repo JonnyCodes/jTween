@@ -1,28 +1,14 @@
-export class Expo {
+import Utils from "../utils";
+import { Crossfade } from "./other";
 
-    static In(): (percent: number) => number {
-        return (percent: number) => {
-            return (percent === 0) ? 0 : Math.pow(2, 10 * (percent - 1));
-        }
-    }
+export const ExpoStart: (percent: number) => number = (percent: number) => {
+    return Math.pow(2, 10 * (Utils.clamp(percent) - 1));
+}
 
-    static Out(): (percent: number) => number {
-        return (percent: number) => {
-            return (percent === 1) ? 1 : -Math.pow(2, -10 * percent) + 1;
-        }
-    }
+export const ExpoStop: (percent: number) => number = (percent: number) => {
+    return -Math.pow(2, -10 * Utils.clamp(percent)) + 1;
+}
 
-    static InOut(): (percent: number) => number {
-        return (percent: number) => {
-            if (percent === 0) {
-                return 0;
-            }
-    
-            if (percent === 1) {
-                return 1;
-            }
-    
-            return percent < 0.5 ? 0.5 * Math.pow(2, 10 * ((percent * 2) - 1)) : 0.5 * (-Math.pow(2, -10 * ((percent * 2) - 1)) + 2);
-        }
-    }
+export const ExpoStep: (percent: number) => number = (percent: number) => {
+    return Crossfade(percent, ExpoStop, ExpoStart);
 }

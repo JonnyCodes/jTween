@@ -1,20 +1,14 @@
-export class Sine {
+import Utils from "../utils";
+import { Crossfade } from "./other";
 
-    static In(): (percent: number) => number {
-        return (percent: number) => {
-            return -1 * Math.cos(percent * (Math.PI / 2)) + 1;
-        }
-    }
+export const SineStart: (percent: number) => number = (percent: number) => {
+    return -Math.cos(Utils.clamp(percent) * (Math.PI / 2)) + 1;
+}
 
-    static Out(): (percent: number) => number {
-        return (percent: number) => {
-            return Math.cos(percent * (Math.PI / 2));
-        }
-    }
+export const SineStop: (percent: number) => number = (percent: number) => {
+    return Math.cos((1 - Utils.clamp(percent)) * (Math.PI / 2));
+}
 
-    static InOut(): (percent: number) => number {
-        return (percent: number) => {
-            return -0.5 * (Math.cos(Math.PI * percent) - 1);
-        }
-    }
+export const SineStep: (percent: number) => number = (percent: number) => {
+    return Crossfade(percent, SineStart, SineStop);
 }
