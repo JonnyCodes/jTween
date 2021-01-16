@@ -26,12 +26,12 @@ export default class delta<T extends any> {
     private _onRepeatScope: any;
     private _autoDestroy: boolean;
 
-    constructor(duration: number, obj: T, props: TweenProps<T>, options: TweenOptions = {}) {
+    constructor(duration: number, obj: T, props: TweenProps<T>, options: Omit<TweenOptions, "autoStart"> = {}) {
         this._duration = duration;
         this._obj = obj;
         this._props = this._getValuesFromUsingProps(props as any, props);
 
-        this._ease = options.ease || Easings.Linear();
+        this._ease = options.ease || Easings.Linear;
         this._repeat = options.repeat || 0;
         this._onRepeat = options.onRepeat || ((num: number) => { });
         this._onRepeatScope = options.onRepeatScope || this;
@@ -45,10 +45,6 @@ export default class delta<T extends any> {
         this._onCompletePromise = () => { };
 
         this._formatter = DefaultFormat.default;
-
-        if (options.autoStart || true) {
-            this.start();
-        }
     }
 
     get value(): number {
@@ -67,7 +63,7 @@ export default class delta<T extends any> {
         this._formatter = formatter;
     }
 
-    public async start() {
+    public async start(): Promise<void> {
         this._startingVals = this._getValuesFromUsingProps(this._obj, this._props);
 
         return new Promise((resolve) => {

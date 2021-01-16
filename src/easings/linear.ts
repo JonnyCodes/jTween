@@ -1,3 +1,3 @@
-export const Linear = () => {
-    return (percent: number) => percent;
-}
+import { Ease } from "../jTween";
+
+export const Linear: Ease = (percent: number) => percent;

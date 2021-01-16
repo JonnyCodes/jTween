@@ -12,6 +12,7 @@ type DeepPartial<T> = {
 };
 
 export type TweenProps<T> = DeepPartial<T>;
+export type Ease = (percent: number) => number;
 
 export default class jTween {
 
@@ -27,10 +28,15 @@ export default class jTween {
         this._defaultFormatter = formatter;
     }
 
-    delta<T>(duration: number, targetObj: T, props: TweenProps<T>, options: TweenOptions = {}): delta<T> {
+    delta<T>(duration: number, targetObj: T, props: TweenProps<T>, options: TweenOptions = {}) {
         const newDelta = new delta(duration, targetObj, props, options);
         newDelta.formatter = this._defaultFormatter;
         this._allTweens.unshift(newDelta);
+
+        if (options.autoStart || true) {
+            return newDelta.start();
+        }
+        
         return newDelta;
     }
 
@@ -38,6 +44,11 @@ export default class jTween {
         const newTo = new to(duration, targetObj, props, options);
         newTo.formatter = this._defaultFormatter;
         this._allTweens.unshift(newTo);
+
+        if (options.autoStart || true) {
+            return newTo.start();
+        }
+
         return newTo;
     }
 
@@ -45,6 +56,11 @@ export default class jTween {
         const newFrom = new from(duration, targetObj, props, options);
         newFrom.formatter = this._defaultFormatter;
         this._allTweens.unshift(newFrom);
+
+        if (options.autoStart || true) {
+            return newFrom.start();
+        }
+
         return newFrom;
     }
 
@@ -52,7 +68,19 @@ export default class jTween {
         const newFromTo = new fromTo(duration, targetObj, fromProps, toProps, options);
         newFromTo.formatter = this._defaultFormatter;
         this._allTweens.unshift(newFromTo);
+        
+        if (options.autoStart || true) {
+            return newFromTo.start();
+        }
+
         return newFromTo;
+    }
+
+    wait(duration: number) {
+        const newWait = new delta(duration, {}, {});
+        newWait.formatter = this._defaultFormatter;
+        this._allTweens.unshift(newWait);
+        return newWait.start();
     }
 
     update(timeDelta: number) {

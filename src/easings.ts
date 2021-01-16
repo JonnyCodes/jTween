@@ -8,5 +8,5 @@ export { ExpoStart, ExpoStop, ExpoStep } from "./easings/expo";
 export { CircStart, CircStop, CircStep } from "./easings/circ";
 export { ElasticStart, ElasticStop, ElasticStep } from "./easings/elastic";
 export { OvershootStart, OvershootStop, OvershootStep } from "./easings/overshoot";
-export { Bounce } from "./easings/bounce";
+export { BounceStart, BounceStop, BounceStep } from "./easings/bounce";
 export { Mix, Crossfade } from "./easings/other";
