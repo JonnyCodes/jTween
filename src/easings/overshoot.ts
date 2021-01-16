@@ -1,20 +1,15 @@
-export class Overshoot {
+import { Crossfade } from "./other";
 
-    static In(overshoot: number = 1.65): (percent: number) => number {
-        return (percent: number) => {
-            return Math.pow(percent, 2) * ((overshoot + 1) * percent - overshoot);
-        }
-    }
+export const OvershootStart: (percent: number) => number = (percent: number) => {
+    return 2.70158 * percent * percent * percent - 1.70158 * percent * percent;
+}
 
-    static Out(overshoot: number = 1.65): (percent: number) => number {
-        return (percent: number) => {
-            return Math.pow(percent - 1, 2) * ((overshoot + 1) * (percent - 1) + overshoot) + 1;
-        }
-    }
+// TODO: BROKEN
+export const OvershootStop: (percent: number) => number = (percent: number) => {
+    return 3.70158 * Math.pow(percent - 1, 3) + 1.70158 * Math.pow(percent - 1, 2);
+}
 
-    static InOut(overshoot: number = 1.65): (percent: number) => number {
-        return (percent: number) => {
-            return ((percent *= 2) < 1 ? Math.pow(percent, 2) * ((overshoot + 1) * percent - overshoot) : (percent -= 2) * percent * ((overshoot + 1) * percent + overshoot) + 2) / 2;
-        }
-    }
+// TODO: BROKEN
+export const OvershootStep: (percent: number) => number = (percent: number) => {
+    return Crossfade(percent, OvershootStart, OvershootStop);
 }

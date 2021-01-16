@@ -2,6 +2,7 @@ import { TweenOptions } from "./tweenOptions";
 import * as Easings from "../easings";
 import Utils from "../utils";
 import { DefaultFormat } from "../formatters"
+import { TweenProps } from "../jTween";
 
 /**
  * Change the given objects properties by the amount in props
@@ -9,8 +10,8 @@ import { DefaultFormat } from "../formatters"
 export default class delta<T extends any> {
 
     protected _obj: T;
-    protected _props: any;
-    protected _startingVals: any;
+    protected _props: TweenProps<T>;
+    protected _startingVals: TweenProps<T>;
     protected _formatter: (value: number) => any;
 
     private _duration: number;
@@ -23,16 +24,18 @@ export default class delta<T extends any> {
     private _onCompletePromise: () => void;
     private _onRepeat: (repeatNum: number) => void;
     private _onRepeatScope: any;
+    private _autoDestroy: boolean;
 
-    constructor(duration: number, obj: T, props: any, options: TweenOptions) {
+    constructor(duration: number, obj: T, props: TweenProps<T>, options: TweenOptions = {}) {
         this._duration = duration;
         this._obj = obj;
-        this._props = this._getValuesFromUsingProps(props, props);
+        this._props = this._getValuesFromUsingProps(props as any, props);
 
         this._ease = options.ease || Easings.Linear();
         this._repeat = options.repeat || 0;
         this._onRepeat = options.onRepeat || ((num: number) => { });
         this._onRepeatScope = options.onRepeatScope || this;
+        this._autoDestroy = options.autoDestroy || true;
 
         this._numRepeats = 0;
         this._elapsedTime = 0;
@@ -42,6 +45,10 @@ export default class delta<T extends any> {
         this._onCompletePromise = () => { };
 
         this._formatter = DefaultFormat.default;
+
+        if (options.autoStart || true) {
+            this.start();
+        }
     }
 
     get value(): number {
@@ -83,6 +90,11 @@ export default class delta<T extends any> {
                 else {
                     this._elapsedTime = this._duration;
                     this._started = false;
+
+                    if (this._autoDestroy) {
+                        this.destroy();
+                    }
+
                     this._onCompletePromise();
                 }
             }
@@ -100,30 +112,30 @@ export default class delta<T extends any> {
     }
 
     // Recursive function to update all the properties
-    protected _updateProps(sourceObj: T, props: any, startingVals: any): void {
+    protected _updateProps(sourceObj: T, props: TweenProps<T>, startingVals: TweenProps<T>): void {
         const propKeys = Object.keys(props)
         propKeys.forEach((key: string) => {
-            const currProp: number | object = props[key];
+            const currProp: number | object = (props as any)[key];
             if (Utils.isObject(currProp)) {
-                this._updateProps((sourceObj as any)[key], currProp, startingVals[key]);
+                this._updateProps((sourceObj as any)[key], currProp, (startingVals as any)[key]);
             }
             else {
-                (sourceObj as any)[key] = this._formatter(startingVals[key] + ((currProp as number) * this.value));
+                (sourceObj as any)[key] = this._formatter((startingVals as any)[key] + ((currProp as number) * this.value));
             }
         });
     }
 
     // Recursive function gets the props in propsObj from the sourceObj and puts them in the returnObj
-    protected _getValuesFromUsingProps(sourceObj: T, propsObj: any, returnObj: any = {}): any {
+    protected _getValuesFromUsingProps(sourceObj: T, propsObj: TweenProps<T>, returnObj: TweenProps<T> = {}): any {
         const keys = Object.keys(propsObj);
 
         keys.forEach((key) => {
-            if (Utils.isObject(propsObj[key])) {
-                returnObj[key] = {};
-                return this._getValuesFromUsingProps((sourceObj as any)[key], (propsObj[key] as object), returnObj[key]);
+            if (Utils.isObject((propsObj as any)[key])) {
+                (returnObj as any)[key] = {};
+                return this._getValuesFromUsingProps((sourceObj as any)[key], (propsObj as any)[key], (returnObj as any)[key]);
             }
             else if (!Utils.isUndefined((sourceObj as any)[key])) {
-                returnObj[key] = (sourceObj as any)[key];
+                (returnObj as any)[key] = (sourceObj as any)[key];
             }
         });
 
@@ -148,6 +160,7 @@ export default class delta<T extends any> {
 
         delete this.start;
         delete this.update;
+        delete this.destroy;
         delete this._updateProps;
         delete this._getValuesFromUsingProps;
     }
