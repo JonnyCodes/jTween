@@ -5,7 +5,7 @@ import { TweenProps } from "../jTween";
 
 export default class to<T extends any> extends delta<T> {
 
-    constructor(duration: number, obj: T, props: TweenProps<T>, options: Omit<TweenOptions, "autoStart"> = {}) {
+    constructor(duration: number, obj: T, props: TweenProps<T>, options: TweenOptions = {}) {
         super(duration, obj, props, options);
     }
 

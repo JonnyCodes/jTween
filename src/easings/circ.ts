@@ -6,8 +6,10 @@ export const CircStart: Ease = (percent: number) => {
     return 1 - Math.sqrt(1 - Math.pow(Utils.clamp(percent), 2));
 }
 
+// TODO: Broken
 export const CircStop: Ease = (percent: number) => {
     return Math.sqrt(1 - Math.pow(Utils.clamp(percent - 1), 2));
 }
 
+// TODO: Broken
 export const CircStep: Ease = Crossfade(CircStart, CircStop);

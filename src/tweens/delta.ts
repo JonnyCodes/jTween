@@ -21,20 +21,24 @@ export default class delta<T extends any> {
     private _numRepeats: number;
     private _started: boolean;
     private _destroyed: boolean;
-    private _onCompletePromise: () => void;
+    private _onCompletePromise: (value: delta<T> | PromiseLike<delta<T>>) => void;
     private _onRepeat: (repeatNum: number) => void;
     private _onRepeatScope: any;
+    private _onUpdate: (percentComplete: number) => void;
+    private _onUpdateScope: any;
     private _autoDestroy: boolean;
 
-    constructor(duration: number, obj: T, props: TweenProps<T>, options: Omit<TweenOptions, "autoStart"> = {}) {
+    constructor(duration: number, obj: T, props: TweenProps<T>, options: TweenOptions = {}) {
         this._duration = duration;
         this._obj = obj;
         this._props = this._getValuesFromUsingProps(props as any, props);
 
         this._ease = options.ease || Easings.Linear;
         this._repeat = options.repeat || 0;
-        this._onRepeat = options.onRepeat || ((num: number) => { });
+        this._onRepeat = options.onRepeat || (() => { });
         this._onRepeatScope = options.onRepeatScope || this;
+        this._onUpdate = options.onUpdate || (() => { });
+        this._onUpdateScope = options.onUpdateScope || this;
         this._autoDestroy = options.autoDestroy || true;
 
         this._numRepeats = 0;
@@ -63,7 +67,7 @@ export default class delta<T extends any> {
         this._formatter = formatter;
     }
 
-    public async start(): Promise<void> {
+    public async start(): Promise<delta<T>> {
         this._startingVals = this._getValuesFromUsingProps(this._obj, this._props);
 
         return new Promise((resolve) => {
@@ -91,11 +95,12 @@ export default class delta<T extends any> {
                         this.destroy();
                     }
 
-                    this._onCompletePromise();
+                    this._onCompletePromise(this);
                 }
             }
 
             this._updateProps(this._obj, this._props, this._startingVals);
+            this._onUpdate.call(this._onUpdateScope, this._elapsedTime / this._duration);
         }
 
         if (this._destroyed) {

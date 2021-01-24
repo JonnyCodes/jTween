@@ -5,15 +5,17 @@ import { TweenProps } from "../jTween";
 
 export default class from<T extends any> extends delta<T> {
 
-    constructor(duration: number, obj: T, props: TweenProps<T>, options: Omit<TweenOptions, "autoStart"> = {}) {
+    constructor(duration: number, obj: T, props: TweenProps<T>, options: TweenOptions = {}) {
         super(duration, obj, props, options);
     }
 
     public async start() {
-        super.start();
+        const promise = super.start();
         
         this._startingVals = this._getValuesFromUsingProps(this._props as any, this._props);
         this._props = this._getValuesFromUsingProps(this._obj, this._props);
+
+        return promise;
     }
 
     // Recursive function to update all the properties

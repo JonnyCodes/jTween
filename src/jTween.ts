@@ -5,13 +5,11 @@ import from from "./tweens/from";
 import fromTo from "./tweens/fromTo";
 import { DefaultFormat } from "./formats/defaultFormat";
 
-type ExcludeFunctionProps<T> = Omit<T, { [K in keyof T]-?: T[K] extends Function ? K : never }[keyof T]>
-
-type DeepPartial<T> = {
-    [P in keyof ExcludeFunctionProps<T>]?: DeepPartial<T[P]>;
+type PickProperties<T, P> = Pick<T, { [K in keyof T]: T[K] extends P ? K : never }[keyof T]>;
+type TweenProps<T> = {
+    [P in keyof PickProperties<T, number | object>]?: TweenProps<T[P]>;
 };
 
-export type TweenProps<T> = DeepPartial<T>;
 export type Ease = (percent: number) => number;
 
 export default class jTween {
@@ -33,23 +31,15 @@ export default class jTween {
         newDelta.formatter = this._defaultFormatter;
         this._allTweens.unshift(newDelta);
 
-        if (options.autoStart || true) {
-            return newDelta.start();
-        }
-        
-        return newDelta;
+        return newDelta.start();
     }
 
     to<T>(duration: number, targetObj: T, props: TweenProps<T>, options: TweenOptions = {}) {
         const newTo = new to(duration, targetObj, props, options);
         newTo.formatter = this._defaultFormatter;
         this._allTweens.unshift(newTo);
-
-        if (options.autoStart || true) {
-            return newTo.start();
-        }
-
-        return newTo;
+        
+        return newTo.start();
     }
 
     from<T>(duration: number, targetObj: T, props: TweenProps<T>, options: TweenOptions = {}) {
@@ -57,11 +47,7 @@ export default class jTween {
         newFrom.formatter = this._defaultFormatter;
         this._allTweens.unshift(newFrom);
 
-        if (options.autoStart || true) {
-            return newFrom.start();
-        }
-
-        return newFrom;
+        return newFrom.start();
     }
 
     fromTo<T, K extends TweenProps<T>>(duration: number, targetObj: T, fromProps: K, toProps: K, options: TweenOptions = {}) {
@@ -69,11 +55,7 @@ export default class jTween {
         newFromTo.formatter = this._defaultFormatter;
         this._allTweens.unshift(newFromTo);
         
-        if (options.autoStart || true) {
-            return newFromTo.start();
-        }
-
-        return newFromTo;
+        return newFromTo.start();
     }
 
     wait(duration: number) {

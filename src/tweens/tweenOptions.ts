@@ -1,8 +1,11 @@
+import { Ease } from "../jTween";
+
 export type TweenOptions = {
     repeat?: number;
-    ease?: (percent: number) => number;
+    ease?: Ease;
     onRepeat?: (repeatNum: number) => void;
     onRepeatScope?: any;
-    autoStart?: boolean;
+    onUpdate?: (percentComplete: number) => void;
+    onUpdateScope?: any;
     autoDestroy?: boolean;
 }
