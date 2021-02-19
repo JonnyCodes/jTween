@@ -1,16 +1,9 @@
 import Utils from "../utils";
-import { Crossfade } from "./other";
 
 const Smooth5 = {
-    Start: (percent: number) => {
-        return Math.pow(Utils.clamp(percent), 5);
-    },
-    Stop: (percent: number) => {
-        return 1 - Math.pow(1 - Utils.clamp(percent), 5);
-    },
-    Step: (percent: number) => 1
+    Start: (percent: number) => Math.pow(Utils.clamp(percent), 5),
+    Stop: (percent: number) => 1 - Math.pow(1 - Utils.clamp(percent), 5),
+    Step: (percent: number) => percent < 0.5 ? Math.pow(Utils.clamp(percent), 5) * 16 : 1 - Math.pow(1 - Utils.clamp(percent), 5) * 16,
 }
-
-Smooth5.Step = Crossfade(Smooth5.Start, Smooth5.Stop);
 
 export { Smooth5 };

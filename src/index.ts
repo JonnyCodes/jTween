@@ -6,6 +6,7 @@ export { Smooth2 } from "./easings/smooth2";
 export { Smooth3 } from "./easings/smooth3";
 export { Smooth4 } from "./easings/smooth4";
 export { Smooth5 } from "./easings/smooth5";
+export { SmoothN } from "./easings/smoothN";
 
 // Sine
 export { Sine } from "./easings/sine";

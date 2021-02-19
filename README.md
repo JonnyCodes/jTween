@@ -19,6 +19,7 @@ A small tween library written in Typescript.
  https://github.com/bameyrick/js-easing-functions/blob/master/src/index.ts
  https://github.com/danro/jquery-easing/blob/master/jquery.easing.js
  https://joshondesign.com/2013/03/01/improvedEasingEquations
+ https://www.youtube.com/watch?v=mr5xkf6zSzk
 
  https://www.desmos.com/calculator
  http://tweenjs.github.io/tween.js/examples/03_graphs.html
