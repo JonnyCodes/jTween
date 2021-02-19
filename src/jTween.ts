@@ -6,10 +6,10 @@ import fromTo from "./tweens/fromTo";
 import { DefaultFormat } from "./formats/defaultFormat";
 
 type PickProperties<T, P> = Pick<T, { [K in keyof T]: T[K] extends P ? K : never }[keyof T]>;
-type TweenProps<T> = {
+
+export type TweenProps<T> = {
     [P in keyof PickProperties<T, number | object>]?: TweenProps<T[P]>;
 };
-
 export type Ease = (percent: number) => number;
 
 export default class jTween {

@@ -1,14 +1,16 @@
 import { Ease } from "../jTween";
 import { Crossfade } from "./other";
 
-export const OvershootStart: Ease = (percent: number) => {
-    return 2.70158 * percent * percent * percent - 1.70158 * percent * percent;
+const Overshoot = {
+    Start: (percent: number) => {
+        const pow2 = Math.pow(percent, 2);
+        return 2.70158 * pow2 * percent - 1.70158 * pow2;
+    },
+    Stop: (percent: number) => {
+        return 2.70158 * (Math.pow(percent - 1, 3)) + (1.70158 * Math.pow(percent - 1, 2)) + 1;
+    },
+    Step: (percent: number) => 1
 }
+Overshoot.Step = Crossfade(Overshoot.Start, Overshoot.Stop);
 
-// TODO: BROKEN
-export const OvershootStop: Ease = (percent: number) => {
-    return 3.70158 * Math.pow(percent - 1, 3) + 1.70158 * Math.pow(percent - 1, 2);
-}
-
-// TODO: BROKEN
-export const OvershootStep: Ease = Crossfade(OvershootStart, OvershootStop);
+export { Overshoot };

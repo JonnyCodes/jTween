@@ -2,12 +2,15 @@ import { Ease } from "../jTween";
 import Utils from "../utils";
 import { Crossfade } from "./other";
 
-export const ExpoStart: Ease = (percent: number) => {
-    return Math.pow(2, 10 * (Utils.clamp(percent) - 1));
+const Expo = {
+    Start: (percent: number) => {
+        return Math.pow(2, 10 * (Utils.clamp(percent) - 1));
+    },
+    Stop: (percent: number) => {
+        return -Math.pow(2, -10 * Utils.clamp(percent)) + 1;
+    },
+    Step: (percent: number) => 1
 }
+Expo.Step = Crossfade(Expo.Stop, Expo.Start);
 
-export const ExpoStop: Ease = (percent: number) => {
-    return -Math.pow(2, -10 * Utils.clamp(percent)) + 1;
-}
-
-export const ExpoStep: Ease = Crossfade(ExpoStop, ExpoStart);
+export { Expo };

@@ -1,3 +1,7 @@
 import { Ease } from "../jTween";
 
-export const Linear: Ease = (percent: number) => percent;
+const Linear = {
+    None: (percent: number) => percent,
+}
+
+export { Linear };

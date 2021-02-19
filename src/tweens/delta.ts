@@ -1,5 +1,5 @@
 import { TweenOptions } from "./tweenOptions";
-import * as Easings from "../easings";
+import { Linear } from "../easings/linear";
 import Utils from "../utils";
 import { DefaultFormat } from "../formatters"
 import { TweenProps } from "../jTween";
@@ -33,7 +33,7 @@ export default class delta<T extends any> {
         this._obj = obj;
         this._props = this._getValuesFromUsingProps(props as any, props);
 
-        this._ease = options.ease || Easings.Linear;
+        this._ease = options.ease || Linear.None;
         this._repeat = options.repeat || 0;
         this._onRepeat = options.onRepeat || (() => { });
         this._onRepeatScope = options.onRepeatScope || this;
