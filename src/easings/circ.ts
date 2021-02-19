@@ -1,15 +1,16 @@
 import Utils from "../utils";
-import { Crossfade } from "./other";
 
 const Circ = {
-    Start: (percent: number) => {
-        return 1 - Math.sqrt(1 - Math.pow(Utils.clamp(percent), 2));
-    },
-    Stop: (percent: number) => {
-        return Math.sqrt(1 - Math.pow(Utils.clamp(percent - 1), 2));
-    },
-    Step: (percent: number) => 1
+    Start: (percent: number) => 1 - Math.sqrt(1 - Math.pow(Utils.clamp(percent), 2)),
+    Stop: (percent: number) => Math.sqrt(1 - Math.pow(Utils.clamp(percent) - 1, 2)),
+    Step: (percent: number) => {
+        const clamped = Utils.clamp(percent);
+        if (clamped < 0.5) {
+            return 0.5 * (1 - Math.sqrt(1 - Math.pow(clamped * 2, 2)));
+        } else {
+            return 0.5 * Math.sqrt(1 - Math.pow(clamped * 2 - 2, 2)) + 0.5;
+        }
+    }
 }
-Circ.Step = Crossfade(Circ.Start, Circ.Stop);
 
 export { Circ };
