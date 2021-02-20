@@ -26,6 +26,9 @@ export { Circ } from "./easings/circ";
 // Bounce
 export { Bounce } from "./easings/bounce";
 
+// Other
+export { Mix, Crossfade } from "./easings/other";
+
 // Types
 export { Ease } from "./jTween";
 
